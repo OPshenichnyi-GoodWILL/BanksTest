@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Рух коштів</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex">
+
+  <div class="h-screen w-60 bg-gray-900 text-white flex flex-col justify-between">
+    <div>
+      <div class="p-5 text-lg font-bold border-b border-gray-700">
+        BankTest
+      </div>
+
+      <nav class="mt-3 flex flex-col space-y-1 px-3 text-sm">
+        <a href="./index.html" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+          <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24">
+            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3"/>
+          </svg>
+          <span>Головна</span>
+        </a>
+        <a href="./Invoices.html" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+          <svg class="w-4 h-4 mr-2 text-gray-300" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24">
+            <path d="M20 13V7a2 2 0 00-2-2H6a2 2 0 00-2 2v6"/>
+            <path d="M20 13a2 2 0 01-2 2H6a2 2 0 01-2-2"/>
+            <path d="M4 17h16"/>
+          </svg>
+          <span>Рахунки</span>
+        </a>
+        <a href="./transfers.html" class="flex items-center px-3 py-2 rounded-lg bg-gray-800 font-semibold transition">
+          <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <path d="M7 10l5 5 5-5"/>
+          </svg>
+          <span>Перекази</span>
+        </a>
+        <a href="#" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+          <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24">
+            <path d="M17 9V7a4 4 0 00-8 0v2"/>
+            <path d="M5 20h14a2 2 0 002-2v-5H3v5a2 2 0 002 2z"/>
+          </svg>
+          <span>Платежі</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="flex-1 p-6">
+    <h1 class="text-2xl font-bold mb-6">Рух коштів по рахунку</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Виберіть валюту:</label>
+        <select id="accountSelect" class="w-full border rounded px-2 py-1 text-sm">
+          <option value="uah">UAH</option>
+          <option value="usd">USD</option>
+          <option value="eur">EUR</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Номер рахунку:</label>
+        <input type="text" id="accountNumber" class="w-full border rounded px-2 py-1 text-sm" placeholder="UA123..." />
+      </div>
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Дата з:<span class="text-red-500">*</span></label>
+        <input type="date" id="fromDate" class="w-full border rounded px-2 py-1 text-sm" required />
+      </div>
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Дата до:<span class="text-red-500">*</span></label>
+        <input type="date" id="toDate" class="w-full border rounded px-2 py-1 text-sm" required />
+      </div>
+      <div class="flex items-end">
+        <button onclick="filterTransfers()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">🔍 Застосувати</button>
+      </div>
+    </div>
+
+    <div id="transferContainer"></div>
+  </div>
+
+  <script>
+     const transactions = [
+      { date: '2025-07-26', amount: 1300, currency: 'uah', accountNumber: 'UA12300001' },
+      { date: '2025-07-27', amount: -400, currency: 'uah', accountNumber: 'UA12300001' },
+      { date: '2025-07-28', amount: 1000, currency: 'uah', accountNumber: 'UA12300002' },
+      { date: '2025-07-29', amount: -300, currency: 'uah', accountNumber: 'UA12300002' },
+      { date: '2025-07-30', amount: 500, currency: 'usd', accountNumber: 'US45600001' },
+      { date: '2025-07-31', amount: -200, currency: 'usd', accountNumber: 'US45600001' },
+      { date: '2025-07-28', amount: 800, currency: 'usd', accountNumber: 'US45600002' },
+      { date: '2025-07-29', amount: -350, currency: 'usd', accountNumber: 'US45600002' },
+      { date: '2025-07-26', amount: 600, currency: 'eur', accountNumber: 'EU78900001' },
+      { date: '2025-07-27', amount: -250, currency: 'eur', accountNumber: 'EU78900001' },
+      { date: '2025-07-30', amount: 1100, currency: 'eur', accountNumber: 'EU78900002' },
+      { date: '2025-07-31', amount: -450, currency: 'eur', accountNumber: 'EU78900002' }
+    ];
+
+    function formatMoney(amount) {
+      return amount.toLocaleString('uk-UA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function filterTransfers() {
+      const currency = document.getElementById('accountSelect').value;
+      const accountInput = document.getElementById('accountNumber').value.trim().toLowerCase();
+      const from = document.getElementById('fromDate').value;
+      const to = document.getElementById('toDate').value;
+
+      if (!from || !to) {
+        alert("Будь ласка, виберіть обидві дати!");
+        return;
+      }
+
+      const filtered = transactions.filter(tx =>
+        tx.currency === currency &&
+        (!accountInput || tx.accountNumber.toLowerCase().includes(accountInput)) &&
+        new Date(tx.date) >= new Date(from) &&
+        new Date(tx.date) <= new Date(to)
+      );
+
+      let html = `
+      <table class="min-w-full text-base text-gray-900">
+        <thead class="bg-gray-100 text-gray-700">
+          <tr>
+            <th class="py-3 px-4 text-left">Дата</th>
+            <th class="py-3 px-4 text-right">Сума</th>
+            <th class="py-3 px-4 text-left">Валюта</th>
+            <th class="py-3 px-4 text-left">Номер рахунку</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+      `;
+
+      let opening = 0, debit = 0, credit = 0;
+
+      filtered.forEach(tx => {
+        if (tx.amount > 0) debit += tx.amount;
+        else credit += Math.abs(tx.amount);
+
+        html += `
+          <tr class="even:bg-gray-50">
+            <td class="px-4 py-2">${tx.date}</td>
+            <td class="px-4 py-2 text-right ${tx.amount >= 0 ? 'text-green-600' : 'text-red-600'}">
+              ${formatMoney(Math.abs(tx.amount))}
+            </td>
+            <td class="px-4 py-2 uppercase">${tx.currency}</td>
+            <td class="px-4 py-2 font-mono">${tx.accountNumber}</td>
+          </tr>
+        `;
+      });
+
+      const closing = debit - credit;
+
+      html += `</tbody>
+        <tfoot class="bg-gray-50 font-semibold">
+          <tr>
+            <td class="px-4 py-2">Зведення</td>
+            <td class="px-4 py-2 text-right">
+              Дебіт: <span class="text-green-600">${formatMoney(debit)}</span><br/>
+              Кредит: <span class="text-red-600">${formatMoney(credit)}</span>
+            </td>
+            <td class="px-4 py-2 uppercase">${currency}</td>
+            <td class="px-4 py-2">
+              <div>Початок: <span>${formatMoney(opening)}</span></div>
+              <div>Кінець: <span>${formatMoney(closing)}</span></div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>`;
+
+      if (filtered.length === 0) {
+        html = `<div class="text-center py-4 text-gray-500">Немає записів</div>`;
+      }
+
+      document.getElementById('transferContainer').innerHTML = html;
+    }
+  </script>
+</body>
+</html>

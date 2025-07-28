@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Рахунки</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex">
+
+
+  <div class="h-screen w-60 bg-gray-900 text-white flex flex-col justify-between">
+    <div>
+      <div class="p-5 text-lg font-bold border-b border-gray-700">
+        BankTest
+      </div>
+
+      <nav class="mt-3 flex flex-col space-y-1 px-3 text-sm">
+        <a href="./index.html" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+          <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24">
+            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3"/>
+          </svg>
+          <span>Головна</span>
+        </a>
+        <a href="./Invoices.html" class="flex items-center px-3 py-2 rounded-lg bg-gray-800 font-semibold transition">
+          <svg class="w-4 h-4 mr-2 text-gray-300" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24">
+            <path d="M20 13V7a2 2 0 00-2-2H6a2 2 0 00-2 2v6"/>
+            <path d="M20 13a2 2 0 01-2 2H6a2 2 0 01-2-2"/>
+            <path d="M4 17h16"/>
+          </svg>
+          <span>Рахунки</span>
+        </a>
+        <a href="./transfers.html" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+          <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <path d="M7 10l5 5 5-5"/>
+          </svg>
+          <span>Перекази</span>
+        </a>
+        <a href="#" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+          <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24">
+            <path d="M17 9V7a4 4 0 00-8 0v2"/>
+            <path d="M5 20h14a2 2 0 002-2v-5H3v5a2 2 0 002 2z"/>
+          </svg>
+          <span>Платежі</span>
+        </a>
+      </nav>
+    </div>
+  </div> 
+
+
+
+
+
+  <div class="flex-1 p-8">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-800">Мої рахунки</h2>
+
+   
+      <div class="relative inline-block text-left">
+        <button type="button" id="dropdownButton"
+          class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 focus:outline-none">
+          ⬇️ Завантажити виписку
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24">
+            <path d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <div id="dropdownMenu"
+          class="hidden absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded shadow-lg p-4 z-10">
+          <div class="mb-3">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Рахунок:</label>
+            <select id="account" class="w-full border-gray-300 rounded px-2 py-1 text-sm">
+              <option value="uah">UAH - Основний</option>
+              <option value="usd">USD - Доларовий</option>
+              <option value="eur">EUR - Євро</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Формат:</label>
+            <select id="format" class="w-full border-gray-300 rounded px-2 py-1 text-sm">
+              <option value="pdf">🧾 PDF</option>
+              <option value="csv">📊 CSV</option>
+              <option value="dbf">🧮 DBF</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Дата з:</label>
+            <input id="fromDate" type="date" class="w-full border-gray-300 rounded px-2 py-1 text-sm" />
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Дата до:</label>
+            <input id="toDate" type="date" class="w-full border-gray-300 rounded px-2 py-1 text-sm" />
+          </div>
+          <button onclick="downloadStatement()" id="downloadBtn"
+            class="w-full bg-blue-600 text-white py-1.5 text-sm rounded hover:bg-blue-700 transition">
+            🔽 Завантажити
+          </button>
+          <div id="loadingIndicator" class="text-center text-sm text-gray-500 mt-2 hidden">Завантаження...</div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div class="bg-white rounded-xl shadow p-5 hover:shadow-lg transition">
+        <div class="text-gray-500 text-sm">UAH • Основний рахунок</div>
+        <div class="text-2xl font-bold text-gray-800 mt-2">₴ 25 000.00</div>
+        <div class="text-sm text-gray-400 mt-1">IBAN: UA123456789012345678901234567</div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-5 hover:shadow-lg transition">
+        <div class="text-gray-500 text-sm">USD • Доларовий</div>
+        <div class="text-2xl font-bold text-gray-800 mt-2">$ 1 320.45</div>
+        <div class="text-sm text-gray-400 mt-1">IBAN: UA998877665544332211009988776</div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-5 hover:shadow-lg transition">
+        <div class="text-gray-500 text-sm">EUR • Євро</div>
+        <div class="text-2xl font-bold text-gray-800 mt-2">€ 540.00</div>
+        <div class="text-sm text-gray-400 mt-1">IBAN: UA443322110099887766554433221</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  document.getElementById('dropdownButton').addEventListener('click', function () {
+    document.getElementById('dropdownMenu').classList.toggle('hidden');
+  });
+
+  function downloadStatement() {
+    const format = document.getElementById('format').value;
+    const from = document.getElementById('fromDate').value;
+    const to = document.getElementById('toDate').value;
+    const loading = document.getElementById('loadingIndicator');
+
+    if (!from || !to) {
+      alert("Будь ласка, виберіть діапазон дат.");
+      return;
+    }
+
+    loading.classList.remove('hidden');
+
+    setTimeout(() => {
+      const filename = `account_statement.${format}`;
+      const link = document.createElement('a');
+      link.href = `./data/${filename}`;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      loading.classList.add('hidden');
+    }, 800);
+  }
+</script>
+
+</body>
+</html>
